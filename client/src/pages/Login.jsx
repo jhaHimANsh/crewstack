@@ -16,7 +16,7 @@ const Login = () => {
     try {
       const { data } = await api.post('/auth/login', form);
       login(data.token, data.user);
-      toast.success(`Logged in as ${data.user.name}`);
+      toast.success(`Welcome back, ${data.user.name}`);
       navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
@@ -26,62 +26,31 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr]">
-      {/* LEFT — brutalist hero panel */}
-      <div className="hidden lg:flex relative bg-sun border-r-[4px] border-ink p-12 flex-col justify-between">
-        {/* decorative grid */}
-        <div className="absolute inset-0 opacity-20"
-             style={{
-               backgroundImage: 'linear-gradient(#0a0a0a 1px, transparent 1px), linear-gradient(90deg, #0a0a0a 1px, transparent 1px)',
-               backgroundSize: '40px 40px'
-             }} />
-        {/* floating decorative blocks */}
-        <div className="absolute top-32 right-12 w-32 h-32 bg-bolt border-[4px] border-ink shadow-brutal-lg rotate-6" />
-        <div className="absolute bottom-32 right-32 w-20 h-20 bg-coral border-[4px] border-ink shadow-brutal -rotate-12" />
-        <div className="absolute top-1/2 left-12 w-16 h-16 bg-lime border-[4px] border-ink shadow-brutal rotate-12" />
-
-        <div className="relative">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 bg-paper border-[4px] border-ink shadow-brutal flex items-center justify-center font-black text-2xl">
-              ▌
+    <div className="min-h-screen aurora relative overflow-hidden">
+      {/* nav */}
+      <div className="relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center text-bg shadow-glow-cyan">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 12 10 16 18 8" />
+              </svg>
             </div>
-            <span className="font-display font-black text-3xl tracking-tighter">CREWSTACK</span>
+            <span className="font-bold tracking-tight">Task Manager</span>
           </Link>
-        </div>
-
-        <div className="relative space-y-6 max-w-lg">
-          <div className="inline-block bg-ink text-sun px-3 py-1 font-black text-xs uppercase tracking-widest border-[3px] border-ink">
-            v1.0 / Production Ready
-          </div>
-          <h1 className="font-display font-black text-5xl xl:text-6xl leading-[0.95] tracking-tighter">
-            Stack the work.<br/>
-            Stack the crew.<br/>
-            <span className="bg-ink text-paper px-2">Ship it.</span>
-          </h1>
-          <p className="font-medium text-lg max-w-md">
-            Project & task management with proper role-based access. Built loud, fast, opinionated.
-          </p>
-        </div>
-
-        <div className="relative flex items-center gap-3 text-xs font-mono">
-          <span className="w-2 h-2 bg-lime border-2 border-ink" />
-          <span className="font-bold uppercase tracking-widest">All systems operational</span>
+          <Link to="/signup" className="btn-sun text-xs">Sign up</Link>
         </div>
       </div>
 
-      {/* RIGHT — form */}
-      <div className="flex items-center justify-center p-6 sm:p-12 bg-paper">
-        <div className="w-full max-w-md">
-          <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-10 h-10 bg-sun border-[3px] border-ink shadow-brutal-sm flex items-center justify-center font-black">▌</div>
-            <span className="font-display font-black text-xl tracking-tighter">CREWSTACK</span>
-          </Link>
+      {/* main */}
+      <div className="relative z-10 flex flex-col items-center justify-center px-4 py-12 sm:py-20">
+        <div className="text-center mb-10 max-w-2xl">
+          <p className="text-accent text-sm font-semibold mb-3">Free To-Do lists for teams and individuals</p>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Welcome back.</h1>
+          <p className="text-muted mt-3">Sign in to continue to your workspace.</p>
+        </div>
 
-          <div className="mb-8">
-            <div className="inline-block chip bg-bolt text-white mb-3">Welcome back</div>
-            <h2 className="font-display font-black text-4xl tracking-tighter">Sign in.</h2>
-          </div>
-
+        <div className="w-full max-w-md card p-6 sm:p-8">
           <form onSubmit={submit} className="space-y-5">
             <div>
               <label className="label">Email</label>
@@ -90,7 +59,7 @@ const Login = () => {
                 required
                 autoComplete="email"
                 className="input"
-                placeholder="you@crew.co"
+                placeholder="you@team.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
@@ -107,16 +76,30 @@ const Login = () => {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full text-base py-3.5">
-              {loading ? 'Signing in…' : 'Sign in →'}
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+              {loading ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
-
-          <p className="text-sm mt-8 font-medium">
-            No account?{' '}
-            <Link to="/signup" className="link">Create one</Link>
-          </p>
         </div>
+
+        <p className="text-sm text-muted mt-6">
+          New here?{' '}
+          <Link to="/signup" className="accent-text hover:underline">Create an account</Link>
+        </p>
+
+        {/* feature pills */}
+        <div className="flex flex-wrap gap-2 mt-12 justify-center">
+          {['Role-based access', 'Real-time status', 'Overdue tracking', 'Team collaboration'].map((f) => (
+            <span key={f} className="px-3 py-1.5 rounded-full text-xs font-medium bg-card border border-border text-muted">
+              {f}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* footer */}
+      <div className="relative z-10 text-center pb-8 text-xs text-subtle">
+        © {new Date().getFullYear()} Task Manager · Free Forever, Upgrade Anytime
       </div>
     </div>
   );

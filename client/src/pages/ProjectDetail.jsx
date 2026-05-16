@@ -8,8 +8,8 @@ const STATUS = ['TODO', 'IN_PROGRESS', 'DONE'];
 const PRIORITY = ['LOW', 'MEDIUM', 'HIGH'];
 
 const statusLabel = (s) => ({ TODO: 'To Do', IN_PROGRESS: 'In Progress', DONE: 'Done' }[s] || s);
-const statusBg = (s) =>
-  s === 'DONE' ? 'bg-lime' : s === 'IN_PROGRESS' ? 'bg-sun' : 'bg-cream';
+const statusDot = (s) =>
+  s === 'DONE' ? 'bg-ok' : s === 'IN_PROGRESS' ? 'bg-warn' : 'bg-bad';
 const priorityChip = (p) =>
   p === 'HIGH' ? 'chip-high' : p === 'MEDIUM' ? 'chip-medium' : 'chip-low';
 
@@ -21,7 +21,7 @@ const ProjectDetail = () => {
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('board'); // board | list
+  const [view, setView] = useState('list');
   const [filter, setFilter] = useState('All');
 
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -171,9 +171,11 @@ const ProjectDetail = () => {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <div className="h-3 w-full loading-bar mb-6" />
-        <div className="h-40 border-[3px] border-ink skel mb-6" />
-        <div className="h-96 border-[3px] border-ink skel" />
+        <div className="h-1 w-full bg-card rounded-full overflow-hidden mb-6">
+          <div className="loading-bar h-full" />
+        </div>
+        <div className="h-40 rounded-2xl skel mb-6" />
+        <div className="h-96 rounded-2xl skel" />
       </div>
     );
   }
@@ -183,28 +185,29 @@ const ProjectDetail = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-6">
       {/* breadcrumb */}
-      <div className="font-mono text-xs uppercase tracking-widest flex gap-2 font-bold">
-        <Link to="/projects" className="hover:bg-sun px-1">Projects</Link>
+      <div className="text-sm flex items-center gap-2 text-subtle">
+        <Link to="/projects" className="hover:text-accent">Projects</Link>
         <span>/</span>
-        <span className="bg-ink text-paper px-1">{project.name}</span>
+        <span className="text-white">{project.name}</span>
       </div>
 
-      {/* project header */}
-      <div className="panel p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* header */}
+      <div className="card p-6 relative overflow-hidden">
+        <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-accent/20 blur-3xl" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-sun border-[3px] border-ink shadow-brutal flex items-center justify-center font-display font-black text-3xl">
+            <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/30 flex items-center justify-center font-bold text-2xl text-accent shadow-glow-cyan">
               {project.name.charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="flex items-center flex-wrap gap-2 mb-2">
-                <h1 className="font-display font-black text-3xl sm:text-4xl tracking-tighter">{project.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{project.name}</h1>
                 <span className={project.status === 'ACTIVE' ? 'chip-active' : 'chip-member'}>
                   {project.status}
                 </span>
               </div>
-              <p className="font-medium text-ink/70 max-w-2xl">{project.description || 'No description.'}</p>
-              <div className="font-mono text-[11px] font-bold uppercase tracking-widest mt-3 text-ink/50">
+              <p className="text-muted max-w-2xl">{project.description || 'No description.'}</p>
+              <div className="text-xs text-subtle mt-2">
                 Owner: {project.owner?.name} · Created {new Date(project.createdAt).toLocaleDateString()}
               </div>
             </div>
@@ -224,23 +227,23 @@ const ProjectDetail = () => {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 border-[3px] border-ink font-black text-xs uppercase tracking-widest transition-all ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition border ${
                 filter === f
-                  ? 'bg-ink text-sun shadow-brutal-sm'
-                  : 'bg-cream hover:bg-sun'
+                  ? 'bg-accent text-bg border-accent'
+                  : 'bg-card text-muted border-border hover:border-accent/40 hover:text-white'
               }`}
             >
               {f === 'TODO' ? 'To Do' : f === 'IN_PROGRESS' ? 'In Progress' : f === 'DONE' ? 'Done' : f}
             </button>
           ))}
         </div>
-        <div className="flex items-center border-[3px] border-ink">
-          {['board', 'list'].map((v) => (
+        <div className="flex items-center gap-1 bg-card border border-border rounded-full p-1">
+          {['list', 'board'].map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`px-3 py-1.5 font-black text-xs uppercase tracking-widest ${
-                view === v ? 'bg-ink text-sun' : 'bg-cream hover:bg-sun'
+              className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition ${
+                view === v ? 'bg-accent text-bg' : 'text-muted hover:text-white'
               }`}
             >
               {v}
@@ -253,24 +256,27 @@ const ProjectDetail = () => {
         {/* MAIN: tasks */}
         <div>
           {filteredTasks.length === 0 ? (
-            <div className="panel p-12 text-center">
-              <div className="font-display text-5xl font-black mb-3">∅</div>
-              <h3 className="font-display font-black text-xl tracking-tight">No tasks</h3>
-              <p className="font-medium text-ink/60 mt-1">
+            <div className="card p-12 text-center">
+              <div className="text-4xl mb-3 opacity-40">✨</div>
+              <h3 className="font-bold text-lg">No tasks</h3>
+              <p className="text-muted text-sm mt-1">
                 {filter === 'All' ? 'Create the first task.' : `No matches for "${filter}".`}
               </p>
             </div>
           ) : view === 'board' ? (
             <div className="grid md:grid-cols-3 gap-3">
               {STATUS.map((s) => (
-                <div key={s} className="bg-paper border-[3px] border-ink min-h-[400px]">
-                  <div className={`${statusBg(s)} border-b-[3px] border-ink px-3 py-2 flex items-center justify-between`}>
-                    <span className="font-black text-xs uppercase tracking-widest">{statusLabel(s)}</span>
-                    <span className="font-mono text-[11px] font-bold bg-ink text-paper px-1.5">
+                <div key={s} className="card">
+                  <div className="border-b border-border px-3 py-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`dot ${statusDot(s)}`} />
+                      <span className="font-semibold text-xs uppercase tracking-wider">{statusLabel(s)}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-subtle tabular-nums">
                       {tasksByStatus[s]?.length || 0}
                     </span>
                   </div>
-                  <div className="p-2 space-y-2">
+                  <div className="p-2 space-y-2 min-h-[300px]">
                     {tasksByStatus[s]?.map((t) => <TaskCard key={t.id} t={t} user={user} canManage={canManage} onEdit={openEdit} onDelete={deleteTask} onStatus={quickStatus} />)}
                   </div>
                 </div>
@@ -284,35 +290,35 @@ const ProjectDetail = () => {
         </div>
 
         {/* SIDEBAR: members */}
-        <aside className="panel p-5 h-fit lg:sticky lg:top-24">
+        <aside className="card p-5 h-fit lg:sticky lg:top-24">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display font-black text-lg tracking-tight">Crew</h3>
-            <span className="font-mono text-[11px] font-bold">{1 + (project.members?.length || 0)}</span>
+            <h3 className="font-bold">Team</h3>
+            <span className="text-xs text-subtle">{1 + (project.members?.length || 0)} member{project.members?.length === 0 ? '' : 's'}</span>
           </div>
           <ul className="space-y-2">
-            <li className="border-[3px] border-ink p-2.5 bg-sun flex items-center gap-3">
-              <div className="w-9 h-9 bg-ink text-paper border-[2px] border-ink flex items-center justify-center font-black">
+            <li className="flex items-center gap-3 p-2 rounded-xl bg-raised">
+              <div className="w-9 h-9 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center font-bold text-sm text-accent">
                 {project.owner?.name?.charAt(0)?.toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm truncate">{project.owner?.name}</div>
-                <div className="font-mono text-[10px] uppercase tracking-widest truncate">{project.owner?.email}</div>
+                <div className="font-medium text-sm truncate">{project.owner?.name}</div>
+                <div className="text-xs text-subtle truncate">{project.owner?.email}</div>
               </div>
-              <span className="chip bg-ink text-sun">Owner</span>
+              <span className="chip-admin">Owner</span>
             </li>
             {project.members?.map((m) => (
-              <li key={m.id} className="border-[3px] border-ink p-2.5 bg-cream flex items-center gap-3">
-                <div className="w-9 h-9 bg-paper border-[2px] border-ink flex items-center justify-center font-black">
+              <li key={m.id} className="flex items-center gap-3 p-2 rounded-xl hover:bg-raised transition">
+                <div className="w-9 h-9 rounded-full bg-card border border-border flex items-center justify-center font-bold text-sm">
                   {m.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm truncate">{m.name}</div>
-                  <div className="font-mono text-[10px] uppercase tracking-widest truncate">{m.email}</div>
+                  <div className="font-medium text-sm truncate">{m.name}</div>
+                  <div className="text-xs text-subtle truncate">{m.email}</div>
                 </div>
                 {canManage && (
                   <button
                     onClick={() => removeMember(m.id)}
-                    className="font-black text-xs hover:text-coral"
+                    className="text-xs text-subtle hover:text-bad"
                     title="Remove"
                   >
                     ×
@@ -322,16 +328,16 @@ const ProjectDetail = () => {
             ))}
           </ul>
           {canManage && (
-            <form onSubmit={addMember} className="mt-4 pt-4 border-t-[3px] border-ink/20 space-y-2">
+            <form onSubmit={addMember} className="mt-4 pt-4 border-t border-border space-y-2">
               <input
                 type="email"
                 required
                 className="input text-sm py-2"
-                placeholder="email@crew.co"
+                placeholder="member@team.com"
                 value={memberEmail}
                 onChange={(e) => setMemberEmail(e.target.value)}
               />
-              <button type="submit" className="btn-ink w-full text-xs py-2">Add member</button>
+              <button type="submit" className="btn-primary w-full text-xs py-2">Invite member</button>
             </form>
           )}
         </aside>
@@ -340,20 +346,18 @@ const ProjectDetail = () => {
       {/* Task modal */}
       {showTaskModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setShowTaskModal(false)}
         >
           <div
-            className="bg-paper border-[4px] border-ink shadow-brutal-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto"
+            className="card-raised w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-display font-black text-2xl tracking-tight">
-                {editingTask ? 'Edit task' : 'New task'}
-              </h2>
+              <h2 className="font-bold text-xl">{editingTask ? 'Edit task' : 'New task'}</h2>
               <button
                 onClick={() => setShowTaskModal(false)}
-                className="w-8 h-8 border-[3px] border-ink bg-cream hover:bg-coral font-black"
+                className="w-8 h-8 rounded-full bg-card border border-border hover:border-bad hover:text-bad text-muted"
               >
                 ×
               </button>
@@ -444,42 +448,43 @@ const ProjectDetail = () => {
   );
 };
 
-// Single task card used in board & list view
 const TaskCard = ({ t, user, canManage, onEdit, onDelete, onStatus, wide = false }) => {
   const overdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'DONE';
   const isAssignee = t.assigneeId === user.id;
   const canEdit = canManage || isAssignee;
+  const statusDotClass = t.status === 'DONE' ? 'bg-ok' : t.status === 'IN_PROGRESS' ? 'bg-warn' : 'bg-bad';
 
   return (
-    <div className={`bg-white border-[3px] border-ink p-3 hover:shadow-brutal-sm hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all ${overdue ? 'bg-coral/20' : ''}`}>
-      <div className="flex items-start gap-2">
+    <div className={`bg-raised border rounded-xl p-3 hover:border-accent/40 transition ${overdue ? 'border-bad/40' : 'border-border'}`}>
+      <div className="flex items-start gap-2.5">
+        <span className={`dot ${statusDotClass} mt-2 flex-shrink-0`} />
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+          <div className="flex flex-wrap items-center gap-1.5 mb-1">
             <span className={
               t.priority === 'HIGH' ? 'chip-high' :
               t.priority === 'MEDIUM' ? 'chip-medium' : 'chip-low'
             }>
               {t.priority}
             </span>
-            {overdue && <span className="chip-overdue">Late</span>}
+            {overdue && <span className="chip-todo">Overdue</span>}
           </div>
-          <h4 className="font-bold text-sm leading-snug">{t.title}</h4>
+          <h4 className="font-semibold text-sm leading-snug">{t.title}</h4>
           {wide && t.description && (
-            <p className="text-xs font-medium text-ink/60 mt-1 line-clamp-2">{t.description}</p>
+            <p className="text-xs text-muted mt-1 line-clamp-2">{t.description}</p>
           )}
-          <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px] font-bold">
+          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
             {t.assignee ? (
-              <span className="flex items-center gap-1">
-                <span className="w-4 h-4 bg-cream border-[2px] border-ink flex items-center justify-center font-black text-[9px]">
+              <span className="flex items-center gap-1.5">
+                <span className="w-5 h-5 rounded-full bg-card border border-border flex items-center justify-center font-semibold text-[10px]">
                   {t.assignee.name.charAt(0).toUpperCase()}
                 </span>
-                <span className="uppercase tracking-wider">{t.assignee.name}</span>
+                <span className="text-muted">{t.assignee.name}</span>
               </span>
             ) : (
-              <span className="font-mono uppercase tracking-widest text-ink/40">[ unassigned ]</span>
+              <span className="text-subtle">Unassigned</span>
             )}
             {t.dueDate && (
-              <span className={`font-mono ${overdue ? 'bg-coral border-2 border-ink px-1' : 'text-ink/60'}`}>
+              <span className={overdue ? 'text-bad font-semibold tabular-nums' : 'text-subtle tabular-nums'}>
                 {new Date(t.dueDate).toLocaleDateString()}
               </span>
             )}
@@ -487,21 +492,25 @@ const TaskCard = ({ t, user, canManage, onEdit, onDelete, onStatus, wide = false
         </div>
       </div>
       {canEdit && (
-        <div className="mt-3 pt-2 border-t-[2px] border-ink/10 flex items-center justify-between gap-2">
+        <div className="mt-3 pt-2 border-t border-border flex items-center justify-between gap-2">
           <select
             value={t.status}
             onChange={(e) => onStatus(t, e.target.value)}
-            className="text-[11px] font-black uppercase tracking-widest border-[2px] border-ink px-1.5 py-0.5 bg-white focus:outline-none focus:bg-sun"
+            className="text-xs bg-card border border-border rounded-md px-2 py-1 focus:outline-none focus:border-accent text-white"
           >
-            {STATUS.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
+            {['TODO', 'IN_PROGRESS', 'DONE'].map((s) => (
+              <option key={s} value={s}>
+                {s === 'TODO' ? 'To Do' : s === 'IN_PROGRESS' ? 'In Progress' : 'Done'}
+              </option>
+            ))}
           </select>
           {canManage && (
             <div className="flex gap-1">
-              <button onClick={() => onEdit(t)} className="text-[11px] font-black uppercase tracking-widest hover:bg-sun px-1.5">
+              <button onClick={() => onEdit(t)} className="text-xs text-muted hover:text-accent px-2">
                 Edit
               </button>
-              <button onClick={() => onDelete(t)} className="text-[11px] font-black uppercase tracking-widest hover:text-coral px-1.5">
-                Del
+              <button onClick={() => onDelete(t)} className="text-xs text-muted hover:text-bad px-2">
+                Delete
               </button>
             </div>
           )}
