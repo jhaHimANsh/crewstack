@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+  }
+  html,
+  body {
+    @apply bg-paper text-ink font-sans;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 1px 1px, #0a0a0a14 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  /* core brutalist box */
+  .panel {
+    @apply bg-cream border-[3px] border-ink shadow-brutal;
+  }
+  .panel-flat {
+    @apply bg-cream border-[3px] border-ink;
+  }
+
+  /* buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-bold uppercase tracking-wide text-sm border-[3px] border-ink px-5 py-2.5 shadow-brutal-sm transition-all duration-150
+           hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-hover
+           active:translate-x-[3px] active:translate-y-[3px] active:shadow-none
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-brutal-sm;
+  }
+  .btn-primary {
+    @apply btn bg-sun text-ink;
+  }
+  .btn-bolt {
+    @apply btn bg-bolt text-white;
+  }
+  .btn-coral {
+    @apply btn bg-coral text-ink;
+  }
+  .btn-ghost {
+    @apply btn bg-cream text-ink;
+  }
+  .btn-ink {
+    @apply btn bg-ink text-paper;
+  }
+
+  /* inputs */
+  .input {
+    @apply w-full bg-white border-[3px] border-ink px-4 py-2.5 font-medium text-ink placeholder:text-ink/40
+           focus:outline-none focus:shadow-brutal-sm focus:translate-x-[-1px] focus:translate-y-[-1px] transition-all duration-150;
+  }
+  .label {
+    @apply block text-xs font-black uppercase tracking-widest mb-2 text-ink;
+  }
+
+  /* chip / tag */
+  .chip {
+    @apply inline-flex items-center px-2 py-0.5 border-[2px] border-ink text-[11px] font-black uppercase tracking-wide;
+  }
+  .chip-todo {
+    @apply chip bg-cream;
+  }
+  .chip-progress {
+    @apply chip bg-sun;
+  }
+  .chip-done {
+    @apply chip bg-lime;
+  }
+  .chip-overdue {
+    @apply chip bg-coral text-ink;
+  }
+  .chip-low {
+    @apply chip bg-sky;
+  }
+  .chip-medium {
+    @apply chip bg-lilac;
+  }
+  .chip-high {
+    @apply chip bg-coral;
+  }
+  .chip-admin {
+    @apply chip bg-ink text-sun;
+  }
+  .chip-member {
+    @apply chip bg-cream;
+  }
+  .chip-active {
+    @apply chip bg-lime;
+  }
+
+  /* link */
+  .link {
+    @apply font-bold underline decoration-[3px] underline-offset-4 hover:bg-sun transition-colors;
+  }
+}
+
+/* loading bar */
+.loading-bar {
+  background: repeating-linear-gradient(
+    45deg,
+    #0a0a0a,
+    #0a0a0a 8px,
+    #ffe119 8px,
+    #ffe119 16px
+  );
+  animation: slide 1s linear infinite;
+}
+@keyframes slide {
+  from { background-position: 0 0; }
+  to { background-position: 32px 0; }
+}
+
+/* shimmer skeleton */
+.skel {
+  background: repeating-linear-gradient(
+    45deg,
+    #e9e2d2,
+    #e9e2d2 6px,
+    #f4f0e8 6px,
+    #f4f0e8 12px
+  );
+}
