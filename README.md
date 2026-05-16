@@ -1,4 +1,4 @@
-# CREWSTACK — Team Task Manager (Full-Stack)
+# Teamtaskmanager — Team Task Manager (Full-Stack)
 
 A full-stack web app where users can create projects, assign tasks, and track progress with **role-based access (Admin / Member)**. Built on PostgreSQL with a neo-brutalist UI and deployed on Railway.
 

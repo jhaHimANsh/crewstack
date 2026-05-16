@@ -1,7 +1,7 @@
 {
-  "name": "crewstack",
+  "name": "teamtaskmanager",
   "version": "1.0.0",
-  "description": "CREWSTACK — full-stack team task manager with role-based access (Admin/Member). Built on PostgreSQL + Prisma + React.",
+  "description": "teamtaskmanager — full-stack team task manager with role-based access (Admin/Member). Built on PostgreSQL + Prisma + React.",
   "scripts": {
     "install-all": "npm install && npm install --prefix server && npm install --prefix client",
     "build": "npm install --prefix server && cd server && npx prisma generate && cd .. && npm install --prefix client && npm run build --prefix client",
